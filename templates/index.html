@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; }
+        header { background: #1C2833; color: white; padding: 16px 24px; font-size: 22px; font-weight: bold; }
+        .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+        .card { background: white; border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h2 { font-size: 16px; margin-bottom: 16px; color: #1C2833; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        input[type=text], input[type=email] {
+            width: 100%; padding: 9px 12px; border: 1px solid #ddd;
+            border-radius: 6px; font-size: 14px;
+        }
+        .btn { padding: 9px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .btn-primary { background: #1C2833; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-search { background: #2980b9; color: white; }
+        .search-row { display: flex; gap: 10px; margin-bottom: 16px; }
+        .search-row input { flex: 1; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { background: #1C2833; color: white; padding: 10px 12px; text-align: left; }
+        td { padding: 10px 12px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f8f9fa; }
+        .flash { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; }
+        .flash.success { background: #d4edda; color: #155724; }
+        .flash.error { background: #f8d7da; color: #721c24; }
+        .empty { text-align: center; color: #888; padding: 32px; }
+    </style>
+</head>
+<body>
+<header>🎓 Student Management System</header>
+<div class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <!-- Add Student Form -->
+    <div class="card">
+        <h2>➕ Naya Student Add Karo</h2>
+        <form method="POST" action="/add">
+            <div class="form-grid">
+                <input type="text" name="name" placeholder="Name" required>
+                <input type="text" name="contact" placeholder="Contact Number" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="rollno" placeholder="Roll Number" required>
+                <input type="text" name="branch" placeholder="Branch" required>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Search + Table -->
+    <div class="card">
+        <h2>📋 Students List</h2>
+        <form method="GET" action="/">
+            <div class="search-row">
+                <input type="text" name="search" placeholder="Name se search karo..." value="{{ search }}">
+                <button type="submit" class="btn btn-search">Search</button>
+                <a href="/" class="btn btn-primary">View All</a>
+            </div>
+        </form>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th><th>Name</th><th>Contact</th>
+                    <th>Email</th><th>Roll No</th><th>Branch</th><th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for s in students %}
+                <tr>
+                    <td>{{ s.STU_ID }}</td>
+                    <td>{{ s.STU_NAME }}</td>
+                    <td>{{ s.STU_CONTACT }}</td>
+                    <td>{{ s.STU_EMAIL }}</td>
+                    <td>{{ s.STU_ROLLNO }}</td>
+                    <td>{{ s.STU_BRANCH }}</td>
+                    <td>
+                        <form method="POST" action="/delete/{{ s.STU_ID }}" onsubmit="return confirm('Delete karna hai?')">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="7" class="empty">Koi student nahi mila</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
